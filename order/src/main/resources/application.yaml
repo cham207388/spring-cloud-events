@@ -15,3 +15,8 @@ spring:
       kafka:
         binder:
           brokers: ${KAFKA_BROKER:localhost:9092}
+logging:
+  level:
+    org:
+      apache:
+        kafka: WARN
