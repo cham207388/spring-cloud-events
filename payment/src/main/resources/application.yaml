@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: payment
+
+  cloud:
+    function:
+      definition: processOrder # combining multiple functions with pipe (|) separator as a single function definition
+    stream:
+      bindings:
+        processOrder-in-0:
+          destination: order-created
+          group: ${spring.application.name}
+        processOrder-out-0:
+          destination: payment-processed # destination name in the message broker
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKER:localhost:9092}
+server:
+  port: 8081

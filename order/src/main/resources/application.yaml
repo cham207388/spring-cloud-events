@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: order
+
+  cloud:
+    function:
+      definition: updateOrder # name of the function defined in the code
+    stream:
+      bindings:
+        updateOrder-in-0:
+          destination: payment-processed
+          group: ${spring.application.name}
+        createOrder-out-0:
+          destination: order-created # destination name in the message broker
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKER:localhost:9092}
