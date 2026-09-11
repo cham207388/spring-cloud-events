@@ -10,6 +10,8 @@ spring:
         updateOrder-in-0:
           destination: payment-processed
           group: ${spring.application.name}
+          consumer:
+            concurrency: 1 # Default: 1 Kafka consumer thread (increase to consume partitions in parallel)
         createOrder-out-0:
           destination: order-created # destination name in the message broker
       kafka:
@@ -34,6 +36,17 @@ spring:
     properties:
       hibernate:
         default_schema: orders_space
+
+  # Enable Virtual Threads (Project Loom, Java 21+)
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 logging:
   level:
