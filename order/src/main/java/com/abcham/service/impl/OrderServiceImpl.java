@@ -25,14 +25,15 @@ public class OrderServiceImpl implements IOrderService {
         log.info("Received order created event for order: {}", orderRequest);
         Order order = toNewOrder(orderRequest);
         orderRepository.save(order);
-        publishOrder(orderRequest);
+        OrderInfo orderInfo = new OrderInfo(order.getId(), order.getStatus());
+        publishOrder(orderInfo);
         return order;
     }
 
-    private void publishOrder(OrderRequest orderRequest) {
+    private void publishOrder(OrderInfo orderInfo) {
 
-        log.info("Publishing order: {}, for payment", orderRequest);
-        streamBridge.send("createOrder-out-0", orderRequest);
+        log.info("Publishing order: {}, for payment", orderInfo);
+        streamBridge.send("createOrder-out-0", orderInfo);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements IOrderService {
 
     private Order toNewOrder(OrderRequest orderRequest) {
 
-        return new Order(orderRequest.id(), orderRequest.customerName(), orderRequest.totalAmount(), "PENDING");
+        return new Order(null, orderRequest.customerName(), orderRequest.totalAmount(), "PENDING");
     }
 
 }

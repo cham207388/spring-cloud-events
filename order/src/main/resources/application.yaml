@@ -17,7 +17,7 @@ spring:
           brokers: ${KAFKA_BROKER:localhost:9092}
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:1234/vendra?currentSchema=orders_space
+    url: jdbc:postgresql://localhost:5423/events?currentSchema=orders_space
     username: postgres
     password: postgres
   flyway:

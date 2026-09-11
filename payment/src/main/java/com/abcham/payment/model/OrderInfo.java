@@ -1,5 +1,15 @@
 package com.abcham.payment.model;
 
-public record OrderInfo(Long id, String status) {
+import lombok.*;
+
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderInfo {
+
+    private Long id;
+    private String status;
 
 }

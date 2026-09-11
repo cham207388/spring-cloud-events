@@ -12,12 +12,15 @@ import java.util.function.Consumer;
 public class NotificationFunction {
 
     @Bean
-    public Consumer<OrderInfo> updateOrder() {
+    public Consumer<OrderInfo> sendNotification() {
 
         return orderStatus -> {
             // Implement your logic here
             log.info("Payment for order_id: {} is {}", orderStatus.id(), orderStatus.status());
-
+            // send email notification to customer
+            // inform delivery service to deliver the order
+            log.info("Sending email notification to customer for order_id: {}", orderStatus.id());
+            log.info("Informing delivery service to deliver the order for order_id: {}", orderStatus.id());
         };
     }
 
