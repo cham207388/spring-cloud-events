@@ -22,10 +22,10 @@ Event-driven microservices architecture using **Spring Cloud Stream** and **Spri
                                       [Notification Service] (Consumer)
 ```
 
-1. **Order Creation**: Client calls `POST /api/orders`. `Order Service` persists the order (status `PENDING`) and publishes an `OrderRequest` event to topic `order-created` via `StreamBridge`.
-2. **Payment Processing**: `Payment Service` consumes `order-created`, verifies payment, and publishes `OrderInfo` (status `PAID`) to topic `payment-processed`.
-3. **Order Update**: `Order Service` consumes `payment-processed` and updates the order status in PostgreSQL.
-4. **Notification**: `Notification Service` consumes `payment-processed` and triggers downstream customer notifications.
+1. **Order Creation**: Client calls `POST /api/orders` with `customerName` and `totalAmount`. `Order Service` persists the order (status `PENDING`) with an auto-generated ID and publishes an `OrderInfo` event (`id`, `PENDING`) to topic `order-created` via `StreamBridge`.
+2. **Payment Processing**: `Payment Service` consumes `OrderInfo` from `order-created`, updates status to `PAID`, and publishes the updated `OrderInfo` to topic `payment-processed`.
+3. **Order Update**: `Order Service` consumes `OrderInfo` from `payment-processed` and updates the order status to `PAID` in PostgreSQL.
+4. **Notification**: `Notification Service` consumes `OrderInfo` from `payment-processed` and triggers customer email and delivery notifications.
 
 ---
 
@@ -33,12 +33,12 @@ Event-driven microservices architecture using **Spring Cloud Stream** and **Spri
 
 Spring Cloud Stream uses **Spring Cloud Function** to bind standard Java functional interfaces (`java.util.function`) to message brokers:
 
-| Interface | Stream Role | Behavior | Project Example | Binding Convention |
-| :--- | :--- | :--- | :--- | :--- |
-| `Supplier<O>` | **Producer** | Generates events periodically or on poll | — | `<fnName>-out-0` |
-| `Function<I, O>` | **Processor** | Consumes input event, outputs new event | `processOrder` (`payment`) | `<fnName>-in-0`<br>`<fnName>-out-0` |
-| `Consumer<I>` | **Sink** | Consumes input event, produces no output | `updateOrder` (`order`) | `<fnName>-in-0` |
-| `StreamBridge` | **On-Demand Producer** | Imperatively sends messages outside functional flow | `publishOrder` (`order`) | `<bindingName>-out-0` |
+| Interface        | Stream Role            | Behavior                                            | Project Example                                              | Binding Convention                  |
+|:-----------------|:-----------------------|:----------------------------------------------------|:-------------------------------------------------------------|:------------------------------------|
+| `Supplier<O>`    | **Producer**           | Generates events periodically or on poll            | —                                                            | `<fnName>-out-0`                    |
+| `Function<I, O>` | **Processor**          | Consumes input event, outputs new event             | `processOrder` (`payment`)                                   | `<fnName>-in-0`<br>`<fnName>-out-0` |
+| `Consumer<I>`    | **Sink**               | Consumes input event, produces no output            | `updateOrder` (`order`), `sendNotification` (`notification`) | `<fnName>-in-0`                     |
+| `StreamBridge`   | **On-Demand Producer** | Imperatively sends messages outside functional flow | `publishOrder` (`order`)                                     | `<bindingName>-out-0`               |
 
 ### Binding Conventions
 - **Inputs**: `<functionName>-in-<index>` (maps to consumer destination/topic)
@@ -51,25 +51,27 @@ Spring Cloud Stream uses **Spring Cloud Function** to bind standard Java functio
 
 ### 1. Order Service (`order`)
 - **Role**: REST Entry Point + Event Producer (`StreamBridge`) + Event Consumer (`Consumer<OrderInfo>`)
-- **Database**: PostgreSQL with Flyway migrations (`orders_space` schema)
+- **Database**: PostgreSQL with Flyway migrations (`orders_space` schema, `orders` table)
 - **Function Definition**: `updateOrder`
 - **Bindings**:
   - `createOrder-out-0` ➔ `order-created` (via `StreamBridge`)
   - `updateOrder-in-0` ➔ `payment-processed` (group: `order`)
 - **Key Files**:
   - `OrderFunction.java`: `Consumer<OrderInfo> updateOrder(IOrderService)`
-  - `OrderServiceImpl.java`: `streamBridge.send("createOrder-out-0", orderRequest)`
+  - `OrderServiceImpl.java`: `streamBridge.send("createOrder-out-0", orderInfo)`
   - `OrderController.java`: `POST /api/orders`
   - `application.yaml`: Binding and function configurations
 
 ### 2. Payment Service (`payment`)
-- **Role**: Event Processor (`Function<OrderRequest, OrderInfo>`)
+- **Role**: Event Processor (`Function<OrderInfo, OrderInfo>`)
 - **Function Definition**: `processOrder`
 - **Bindings**:
   - `processOrder-in-0` ➔ `order-created` (group: `payment`)
   - `processOrder-out-0` ➔ `payment-processed`
 - **Key Files**:
-  - `PaymentFunction.java`: `Function<OrderRequest, OrderInfo> processOrder()`
+  - `PaymentFunction.java`: `Function<OrderInfo, OrderInfo> processOrder()`
+  - `OrderInfo.java`: Event payload model (`id`, `status`)
+  - `Configs.java`: `ObjectMapper` bean
   - `application.yaml`: Input and output binding declarations
 
 ### 3. Notification Service (`notification`)
@@ -78,9 +80,9 @@ Spring Cloud Stream uses **Spring Cloud Function** to bind standard Java functio
 - **Bindings**:
   - `sendNotification-in-0` ➔ `payment-processed` (group: `notification`)
 - **Key Files**:
-  - `NotificationFunction.java`: `Consumer<OrderInfo>` bean
+  - `NotificationFunction.java`: `Consumer<OrderInfo> sendNotification()`
+  - `Configs.java`: `ObjectMapper` bean
   - `application.yml`: Input binding configuration
-  - *Note*: Ensure the bean name in `NotificationFunction.java` matches the configured definition (`sendNotification`).
 
 ---
 
@@ -111,7 +113,6 @@ Submit a test order:
 curl -X POST http://localhost:8080/api/orders \
   -H "Content-Type: application/json" \
   -d '{
-    "id": 1001,
     "customerName": "John Doe",
     "totalAmount": 99.99
   }'
