@@ -1,4 +1,4 @@
-package com.abcham;
+package com.abcham.repository;
 
 import com.abcham.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

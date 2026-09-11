@@ -1,14 +1,14 @@
-package com.abcham.payment;
+package com.abcham.notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PaymentApplication {
+public class NotificationApplication {
 
     static void main(String[] args) {
 
-        SpringApplication.run(PaymentApplication.class, args);
+        SpringApplication.run(NotificationApplication.class, args);
     }
 
 }

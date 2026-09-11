@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: notification
+  cloud:
+    function:
+      definition: sendNotification # name of the function defined in the code
+    stream:
+      bindings:
+        sendNotification-in-0:
+          destination: payment-processed
+          group: ${spring.application.name}
+#        sendNotification-out-0:
+#          destination: order-complete # destination name in the message broker
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKER:localhost:9092}

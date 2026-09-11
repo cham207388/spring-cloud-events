@@ -1,6 +1,7 @@
 package com.abcham.service.impl;
 
-import com.abcham.OrderRepository;
+import com.abcham.model.OrderInfo;
+import com.abcham.repository.OrderRepository;
 import com.abcham.entity.Order;
 import com.abcham.model.OrderRequest;
 import com.abcham.service.IOrderService;
@@ -36,13 +37,14 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     @Transactional
-    public boolean updateOrderStatus(Long orderId) {
+    public boolean updateOrderStatus(OrderInfo info) {
 
-        Order savedOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        savedOrder.setStatus("PAID");
+        Order savedOrder = orderRepository.findById(info.id())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        savedOrder.setStatus(info.status());
 //        orderRepository.save(savedOrder);
 
-        log.info("Received order status update event for orderId: {}", orderId);
+        log.info("Received order status update event for orderId: {}", info.id());
         return true;
     }
 
