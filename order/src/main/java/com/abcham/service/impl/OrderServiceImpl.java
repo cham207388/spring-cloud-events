@@ -1,12 +1,14 @@
 package com.abcham.service.impl;
 
-import com.abcham.model.Order;
+import com.abcham.OrderRepository;
+import com.abcham.entity.Order;
 import com.abcham.model.OrderRequest;
 import com.abcham.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -14,13 +16,14 @@ import org.springframework.stereotype.Service;
 public class OrderServiceImpl implements IOrderService {
 
     private final StreamBridge streamBridge;
+    private final OrderRepository orderRepository;
 
     @Override
     public Order createOrder(OrderRequest orderRequest) {
 
         log.info("Received order created event for order: {}", orderRequest);
         Order order = toNewOrder(orderRequest);
-        log.info("saving order: {}", order);
+        orderRepository.save(order);
         publishOrder(orderRequest);
         return order;
     }
@@ -32,7 +35,12 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
+    @Transactional
     public boolean updateOrderStatus(Long orderId) {
+
+        Order savedOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        savedOrder.setStatus("PAID");
+//        orderRepository.save(savedOrder);
 
         log.info("Received order status update event for orderId: {}", orderId);
         return true;

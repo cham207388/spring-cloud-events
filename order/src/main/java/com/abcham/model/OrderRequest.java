@@ -1,5 +1,7 @@
 package com.abcham.model;
 
-public record OrderRequest(Long id, String customerName, Double totalAmount) {
+import java.math.BigDecimal;
+
+public record OrderRequest(Long id, String customerName, BigDecimal totalAmount) {
 
 }

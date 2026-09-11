@@ -1,0 +1,11 @@
+services:
+  shared-network:
+    networks:
+      - events
+  microservice-base:
+    extends:
+      service: shared-network
+    deploy:
+      resources:
+        limits:
+          memory: 700m

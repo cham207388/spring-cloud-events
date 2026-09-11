@@ -1,6 +1,6 @@
 package com.abcham.service;
 
-import com.abcham.model.Order;
+import com.abcham.entity.Order;
 import com.abcham.model.OrderRequest;
 
 public interface IOrderService {

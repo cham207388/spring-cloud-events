@@ -15,6 +15,26 @@ spring:
       kafka:
         binder:
           brokers: ${KAFKA_BROKER:localhost:9092}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:1234/vendra?currentSchema=orders_space
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    clean-disabled: true
+    out-of-order: false
+    default-schema: orders_space
+    schemas: orders_space
+    create-schemas: true
+  jpa:
+    properties:
+      hibernate:
+        default_schema: orders_space
+
 logging:
   level:
     org:

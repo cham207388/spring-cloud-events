@@ -1,6 +1,6 @@
 package com.abcham.controller;
 
-import com.abcham.model.Order;
+import com.abcham.entity.Order;
 import com.abcham.model.OrderRequest;
 import com.abcham.service.IOrderService;
 import lombok.RequiredArgsConstructor;
