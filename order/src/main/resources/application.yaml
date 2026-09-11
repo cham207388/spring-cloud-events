@@ -52,4 +52,7 @@ logging:
   level:
     org:
       apache:
-        kafka: WARN
+        kafka:
+          clients:
+            consumer:
+              internals: ERROR
