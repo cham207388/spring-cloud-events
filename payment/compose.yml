@@ -1,0 +1,13 @@
+services:
+  payment:
+    container_name: payment
+    build:
+      context: .
+      dockerfile: Dockerfile
+    extends:
+      file: ../compose-config.yml
+      service: microservice-base
+
+networks:
+  events:
+    driver: bridge

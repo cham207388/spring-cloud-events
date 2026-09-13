@@ -1,0 +1,28 @@
+services:
+  events-db:
+    image: 'postgres:18-alpine'
+    container_name: events-db
+    environment:
+      POSTGRES_DB: events
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - '5423:5432'
+    volumes:
+      - events-pg-volume:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d events" ]
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - events
+          
+networks:
+  events:
+    driver: bridge
+
+volumes:
+  events-pg-volume:

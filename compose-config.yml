@@ -9,3 +9,5 @@ services:
       resources:
         limits:
           memory: 700m
+    environment:
+      - KAFKA_BROKER=kafka:9092
