@@ -10,13 +10,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://events-db:5432/events?currentSchema=orders_space
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-    volumes:
-      - order-pg-volume:/var/lib/postgresql
+    depends_on:
+      events-db:
+        condition: service_healthy
     extends:
       file: ../compose-config.yml
       service: microservice-base
-volumes:
-  order-pg-volume:
 
 networks:
   events:

@@ -4,10 +4,10 @@ import com.abcham.entity.Order;
 import com.abcham.model.OrderRequest;
 import com.abcham.service.IOrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +20,11 @@ public class OrderController {
     public Order createOrder(@RequestBody OrderRequest orderRequest) {
 
         return iOrderService.createOrder(orderRequest);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Order>> getOrders() {
+        return ResponseEntity.ok(iOrderService.getOrders());
     }
 
 }

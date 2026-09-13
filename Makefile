@@ -6,6 +6,9 @@ compose-up:
 compose-down:
 	docker compose down -v
 
+order-restart:
+	docker compose up order -d --build
+
 # order
 order-image:
 	docker image build -t order-service ./order-service

@@ -11,6 +11,8 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,6 +49,12 @@ public class OrderServiceImpl implements IOrderService {
 
         log.info("Received order status update event for orderId: {}", info.id());
         return true;
+    }
+
+    @Override
+    public List<Order> getOrders() {
+
+        return orderRepository.findAll();
     }
 
     private Order toNewOrder(OrderRequest orderRequest) {
