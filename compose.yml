@@ -1,6 +1,7 @@
 include:
   - ./compose.kafka.yml
   - ./compose.db.yml
+  - ./compose.datadog.yml
   - ./order/compose.yml
   - ./payment/compose.yml
   - ./notification/compose.yml

@@ -10,6 +10,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://events-db:5432/events?currentSchema=orders_space
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - DD_SERVICE=order-service
+      - DD_VERSION=1.0.0
     depends_on:
       events-db:
         condition: service_healthy

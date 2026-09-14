@@ -19,6 +19,9 @@ RUN ./gradlew build --no-daemon -x test
 # Second stage: runtime image
 FROM eclipse-temurin:25-jre-alpine
 
+# Download Datadog Java Agent
+ADD https://dtdg.co/latest-java-tracer /app/dd-java-agent.jar
+
 RUN addgroup -S -g 1000 events && \
     adduser -S -u 1000 -G events events && \
     mkdir -p /app && \

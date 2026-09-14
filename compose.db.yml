@@ -6,6 +6,17 @@ services:
       POSTGRES_DB: events
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
+    labels:
+      com.datadoghq.ad.check_names: '["postgres"]'
+      com.datadoghq.ad.init_configs: '[{}]'
+      com.datadoghq.ad.instances: '[{
+        "host": "events-db",
+        "port": 5432,
+        "username": "datadog",
+        "password": "datadog_password",
+        "dbname": "events",
+        "dbm": true
+      }]'
     ports:
       - '5423:5432'
     volumes:

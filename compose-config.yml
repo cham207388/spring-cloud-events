@@ -11,6 +11,12 @@ services:
           memory: 700m
     environment:
       - KAFKA_BROKER=kafka:19092
+      - DD_AGENT_HOST=datadog-agent
+      - DD_TRACE_AGENT_PORT=8126
+      - DD_ENV=dev
+      - DD_LOGS_INJECTION=true
+      - DD_DATA_STREAMS_ENABLED=true
+      - JAVA_TOOL_OPTIONS=-javaagent:/app/dd-java-agent.jar
     depends_on:
       kafka:
         condition: service_healthy
