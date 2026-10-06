@@ -1,0 +1,26 @@
+# Build and dependency artifacts
+.gradle/
+build/
+out/
+bin/
+
+# IDE and editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Environment and logs
+*.log
+.env*
+.DS_Store
+
+# Documentation and markdown
+*.md
